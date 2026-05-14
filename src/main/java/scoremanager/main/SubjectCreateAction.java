@@ -19,19 +19,19 @@ public class SubjectCreateAction extends Action {
 		HttpSession session = req.getSession(); // セッション
 		Teacher teacher = (Teacher)session.getAttribute("user");
 
-		// ローカル変数の指定 1
+		// ローカル変数の指定 
 		ClassNumDao classNumDao = new ClassNumDao(); // クラス番号Daoを初期化
 		LocalDate todaysDate = LocalDate.now(); // LocalDateインスタンスを取得
 		int year = todaysDate.getYear(); // 現在の年を取得
 
-		// リクエストパラメーターの取得 2
+		// リクエストパラメーターの取得 
 		// なし
 
-		// DBからデータ取得 3
+		// DBからデータ取得 
 		// ログインユーザーの学校コードをもとにクラス番号の一覧を取得
 		List<String> list = classNumDao.filter(teacher.getSchool());
 
-		// ビジネスロジック 4
+		// ビジネスロジック 
 		// リストを初期化
 		List<Integer> entYearSet = new ArrayList<>();
 		// 10年前から10年後まで年をリストに追加
@@ -39,12 +39,12 @@ public class SubjectCreateAction extends Action {
 			entYearSet.add(i);
 		}
 
-		// レスポンス値をセット 6
+		// レスポンス値をセット 
 		// リクエストにデータをセット
 		req.setAttribute("class_num_set", list);
 		req.setAttribute("ent_year_set", entYearSet);
 
-		// JSPへフォワード 7
+		// JSPへフォワード 
 		req.getRequestDispatcher("subject_create.jsp").forward(req, res);
 	}
 
