@@ -2,15 +2,10 @@ package bean;
 
 public class Test {
 	 private Student student;
-	 
 	    private String classNum;
-	    
 	    private Subject subject;
-	    
 	    private School school;
-	    
 	    private int no;
-	    
 	    private int point;
 
 	    public Student getStudent() {
