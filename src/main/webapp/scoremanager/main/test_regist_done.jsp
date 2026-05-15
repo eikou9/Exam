@@ -22,7 +22,7 @@
 					<a href="TestRegist.action" class="me-4">戻る</a>
 					
 					<%-- ④成績参照 --%>
-					<a href="TestListSubject.action">成績参照</a>
+					<a href="TestList.action">成績参照</a>
 				</div>
 			</div>
 		</div>

@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.Subject;
-
+import bean.Subject;
 import bean.Teacher;
 import bean.Test; // 成績（テスト）情報のBean
 import dao.ClassNumDao;
@@ -31,12 +30,12 @@ public class TestRegistAction extends Action {
 		String classNum = ""; // 入力されたクラス番号
 		String subjectCd = ""; // 入力された科目コード
 		String countStr = ""; // 入力された回数
+		String subjectName = ""; // 入力された科目
 		int entYear = 0; // 入学年度
 		int count = 0; // 回数
 		List<Test> tests = null; // テストリスト
 		LocalDate todaysDate = LocalDate.now(); // LocalDateインスタンスを取得
 		int year = todaysDate.getYear(); // 現在の年を取得
-		
 		TestDao testDao = new TestDao(); // テストDao
 		SubjectDao subjectDao = new SubjectDao(); // 科目Dao
 		ClassNumDao classNumDao = new ClassNumDao(); // クラス番号Dao
@@ -71,21 +70,33 @@ public class TestRegistAction extends Action {
 		// ログインユーザーの学校コードをもとに科目一覧を取得
 		List<Subject> subjectList = subjectDao.filter(teacher.getSchool());
 
+		// subject作成
+		Subject subject = new Subject();
+		subject.setCd(subjectCd);
+		
 		// 全ての検索条件が指定されている場合のみ検索実行
 		if (entYear != 0 && classNum != null && !classNum.equals("0") && subjectCd != null && !subjectCd.equals("0") && count != 0) {
 			// 入学年度、クラス、科目、回数、学校を指定してテスト一覧を取得
-			tests = testDao.filter(entYear, classNum, subjectCd, count, teacher.getSchool());
+			tests = testDao.filter(entYear, classNum, subject, count, teacher.getSchool());
 		} else if (entYearStr != null) {
 			// 検索ボタンが押されたが条件が不足している場合
 			errors.put("filter", "入学年度、クラス、科目、回数を選択してください");
 			req.setAttribute("errors", errors);
 		}
-
+		if (subjectCd != null && !subjectCd.equals("0")) {
+		    subject = subjectDao.get(subjectCd, teacher.getSchool());
+		    
+		    if (subject != null) {
+		        subjectName = subject.getName();
+		    }
+		}
+		
 		// レスポンス値をセット 6
 		req.setAttribute("f1", entYear);
 		req.setAttribute("f2", classNum);
 		req.setAttribute("f3", subjectCd);
 		req.setAttribute("f4", count);
+		req.setAttribute("subjectName", subjectName);
 		
 		// リクエストに取得したデータをセット
 		req.setAttribute("students", tests); // JSP側でstudentsとして回しているため

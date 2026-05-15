@@ -7,137 +7,149 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.security.auth.Subject;
-
 import bean.School;
-import jdk.incubator.vector.VectorOperators.Test;
+import bean.Student;
+import bean.Subject;
+import bean.Test;
 
 public class TestDao extends Dao {
-	private String baseSql="select * from Test where school_cd=?";
 	
-	public Test get(String no)throws Exception{
-		Test test =new Test();
-		
-		Connection connection=getConnection();
-		
-		PreparedStatement statement=null;
-		
-		try {
-			statement =connection.prepareStatement("select *from test where no=?");
-			statement.setString(1, no);
-			ResultSet resultSet=statement.executeQuery();
-			
-			SchoolDao schoolDao=new SchoolDao();
-			
-			if (resultSet.next()) {
-				test.setStudent_No(resultSet.getString("student_no"));
-				test.setSubject_Cd(resultSet.getString("subject_cd"));
-				test.setSchool_Cd(resultSet.getString("school_cd"));
-				test.setNo(resultSet.getString("no"));
-				test.setPoint(resultSet.getString("point"));
-				test.setClass_Num(resultSet.getString("class_num"));
-				
-			    test.setshool(schoolDao.get(resultSet.getString("school_cd")));
-			    
-			}else {
-				test=null;
-			}
-		} catch (Exception e) {
-			throw e;
-			// TODO: handle exception
-		}finally {
-			if (statement !=null) {
-				try {
-					statement.close();
-				} catch (SQLException sqle) {
-					throw sqle;
-					// TODO: handle exception
-				}
-			}
-			if (connection !=null) {
-				try {
-					connection.close();
-				} catch (SQLException sqle) {
-					// TODO: handle exception
-					throw sqle;
-				}
-			}
-				
-			}
-		return test;
-	      }
-	public Test get(String no)throws Exception{
-		Test test =new Test();
-		Connection connection=getConnection();
-		PreparedStatement statement=null;
-		
-		try {
-			statement=connection.prepareStatement("select * from test where no=?");
-			
-			statement.setString(1, no);
-			ResultSet resultSet=statement.executeQuery();
-			
-			SchoolDao schoolDao=new SchoolDao();
-			
-			if (resultSet.next()) {
-				test.setStudent_No(resultSet.getString("student_no"));
-				test.setSubject_Cd(resultSet.getString("subject_cd"));
-				test.setSchool_Cd(resultSet.getString("school_cd"));
-				test.setNo(resultSet.getString("no"));
-				test.setPoint(resultSet.getString("point"));
-				test.setClass_Num(resultSet.getString("class_num"));
-				
-				test.setSchool(schoolDao.get(resultSet.getString("school_cd")));
-			}else {
-				test=null;
-			}
-			
-		} catch (Exception e) {
-			throw e;
-			// TODO: handle exception
-		}finally {
-			if (statement !=null) {
-				try {
-					statement.close();
-				} catch (SQLException sqle) {
-					throw sqle;
-					// TODO: handle exception
-				}
-			}
-			if (connection !=null) {
-				try {
-					connection.close();
-				} catch (SQLException sqle) {
-					throw sqle;
-					// TODO: handle exception
-				}
-			}
-		}
-		return test;
+	public Test get(String no) throws Exception {
+
+	    Test test = null;
+
+	    Connection connection = getConnection();
+
+	    PreparedStatement statement = null;
+
+	    ResultSet resultSet = null;
+
+	    try {
+
+	        statement = connection.prepareStatement(
+	            "select * from test where no = ?"
+	        );
+
+	        statement.setInt(1, Integer.parseInt(no));
+
+	        resultSet = statement.executeQuery();
+
+	        if (resultSet.next()) {
+
+	            test = new Test();
+
+	            // Student
+	            Student student = new Student();
+	            student.setNo(resultSet.getString("student_no"));
+
+	            // Subject
+	            Subject subject = new Subject();
+	            subject.setCd(resultSet.getString("subject_cd"));
+
+	            // School
+	            School school = new School();
+	            school.setCd(resultSet.getString("school_cd"));
+
+	            // Testへセット
+	            test.setStudent(student);
+	            test.setSubject(subject);
+	            test.setSchool(school);
+
+	            test.setNo(resultSet.getInt("no"));
+	            test.setPoint(resultSet.getInt("point"));
+	            test.setClassNum(resultSet.getString("class_num"));
+	        }
+
+	    } catch (Exception e) {
+
+	        throw e;
+
+	    } finally {
+
+	        if (resultSet != null) {
+	            resultSet.close();
+	        }
+
+	        if (statement != null) {
+	            statement.close();
+	        }
+
+	        if (connection != null) {
+	            connection.close();
+	        }
+	    }
+
+	    return test;
 	}
-	public List<Test>postFilter(ResultSet resultSet,School school)throws Exception{
-		
-		List<Test>list=new ArrayList<>();
-		try {
-			while (resultSet.next()) {
-				Test test=new Test();
-				test.setStudent_No(resultSet.getString("student_no"));
-				test.setSubject_Cd(resultSet.getString("subject_cd"));
-				test.setSchool_Cd(resultSet.getString("school_cd"));
-				test.setNo(resultSet.getString("no"));
-				test.setPoint(resultSet.getString("point"));
-				test.setClass_Num(resultSet.getString("class_num"));
-				
-				list.add(test);
-			}
-		} catch ( SQLException|NullPointerException e) {
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-		return list;
+	
+	private List<Test> postFilter(ResultSet resultSet, School school) throws Exception {
+
+	    List<Test> list = new ArrayList<>();
+
+	    try {
+
+	        while (resultSet.next()) {
+
+	            Test test = new Test();
+
+	            Student student = new Student();
+	            student.setNo(resultSet.getString("student_no"));
+	            student.setName(resultSet.getString("student_name"));
+	            student.setEntYear(resultSet.getInt("student_entyear"));
+	            
+	            Subject subject = new Subject();
+	            subject.setCd(resultSet.getString("subject_cd"));
+
+	            test.setStudent(student);
+	            test.setSubject(subject);
+	            test.setSchool(school);
+
+	            test.setClassNum(resultSet.getString("class_num"));
+
+	            test.setNo(resultSet.getInt("test_no"));
+
+	            Integer point = (Integer) resultSet.getObject("point");
+
+	            if (point != null) {
+	                test.setPoint(point);
+	            }
+
+	            list.add(test);
+	        }
+
+	    } catch (SQLException | NullPointerException e) {
+
+	        e.printStackTrace();
+	    }
+
+	    return list;
 	}
+
+	
 	public List<Test>filter(int entYear,String classNum,Subject subject,int num,School school)throws Exception{
 		
+		String sql = "SELECT " +
+			    "s.ent_year AS student_entyear, " +
+			    "s.class_num AS student_classnum, " +
+			    "s.no AS student_no, " +
+			    "s.name AS student_name, " +
+			    "t.class_num AS class_num, " +
+			    "t.subject_cd AS subject_cd, " +
+			    "t.school_cd AS school_cd, " +
+			    "t.no AS test_no, " +
+			    "t.point AS point " +
+			    "FROM student s " +
+			    "LEFT JOIN test t " +
+			    "ON s.no = t.student_no " +
+			    "AND t.subject_cd = ? " +
+			    "AND t.no = ? " +
+			    "WHERE s.ent_year = ? " +
+			    "AND s.class_num = ? " +
+			    "AND s.school_cd = ? " +
+			    "ORDER BY s.no ASC";
+		
+
+		 
 		List<Test>list=new ArrayList<>();
 		
 		Connection connection=getConnection();
@@ -145,26 +157,20 @@ public class TestDao extends Dao {
 		PreparedStatement statement=null;
 		
 		ResultSet resultSet=null;
-		String condition = "and ent_year = ? and class_num = ?";
-		// SQL文のソート
-		String order = " order by no asc";
-		
-		String conditionIsAttend="";
-		if (isAttend) {
-			conditionIsAttend="and is_attend = true";
-		}
+//		String condition = "and s.ent_year = ? " + "and s.class_num = ? " + "and t.subject_cd = ? " + "and t.no = ? ";
+//		// SQL文のソート
+//		String order = " order by no asc";
+//		
+//		String conditionIsAttend="";
+
 		try {
-			statement = connection.prepareStatement(baseSql + condition + conditionIsAttend + order);
+			statement = connection.prepareStatement(sql);
 			
-			statement.setInt(1, entYear);
-			
-			statement.setString(2, classNum);
-			
-			statement.setSubject(3,subject);
-			
-			statement.setInt(4, num);
-			
-			statement.setSchool(5,school);
+			statement.setString(5, school.getCd());
+			statement.setInt(3, entYear);
+			statement.setString(4, classNum);
+			statement.setString(1, subject.getCd());
+			statement.setInt(2, num);
 			
 			resultSet = statement.executeQuery();
 			
@@ -173,6 +179,9 @@ public class TestDao extends Dao {
 			throw e;
 			// TODO: handle exception
 		}finally {
+			if (resultSet != null) {
+			    resultSet.close();
+			}
 			if (statement !=null) {
 				try {
 					statement.close();
@@ -189,70 +198,16 @@ public class TestDao extends Dao {
 					throw sqle;
 				}
 			}
+			
 		}
 		return list;
 		
 	}
-	public boolean save(List list)throws Exception{
+	
+	public boolean save(Test test) throws Exception{
 		
-		Connection connection=getConnection();
+		Connection connection = getConnection();
 		
-		PreparedStatement statement=null;
-		
-		int count=0;
-		
-		try {
-			Test old=get(test.get());
-			if (old=null) {
-				statement=connection.prepareStatement("insert into test(student_no,subject_cd,school_cd,no,point,class_num)values(?,?,?,?,?,?)");
-				
-				test.setStudent_No(1,test.getstudent_no);
-				test.setSubject_Cd(2,test.getsubject_cd);
-				test.setSchool_Cd(3,test.getschool_cd);
-				test.setNo(4,test.getno);
-				test.setPoint(5,test.getpoint);
-				test.setClass_Num(6,test.class_num);
-			
-			}else {
-				statement=connection.prepareStatement("updatet test set name=?,student_no=?,subject_cd=?,school_cd=?,no=?,point=?,class_num=? where no=?");
-				
-				test.setStudent_No(1,test.getstudent_no);
-				test.setSubject_Cd(2,test.getsubject_cd);
-				test.setSchool_Cd(3,test.getschool_cd);
-				test.setNo(4,test.getno);
-				test.setPoint(5,test.getpoint);
-				test.setClass_Num(6,test.class_num);
-			}
-			count=statement.executeUpdate();
-		} catch (Exception e) {
-			throw e;
-			// TODO: handle exception
-		}finally {
-			if (statement !=null) {
-				try {
-					statement.close();
-				} catch (SQLException sqle) {
-					throw sqle;
-					// TODO: handle exception
-				}
-			}
-			if (connection !=null) {
-				try {
-					connection.close();
-				} catch (SQLException sqle) {
-					throw sqle;
-					// TODO: handle exception
-				}
-			}
-		}
-		if (count>0) {
-			return true;
-		}else {
-			return false;
-		}
-	}
-	private boolean save(Test test,
-            Connection connection) {
 		boolean result = false;
 		
         try {
@@ -294,17 +249,17 @@ public class TestDao extends Dao {
              } else {
             	 
             	 // なければINSERT
-            	 String insertSql ="INSERT INTO test " +"(student_no, subject_cd, no, point) " +"VALUES (?, ?, ?, ?)";
+            	 String insertSql ="INSERT INTO test " +"(student_no, subject_cd, school_cd, no, point, class_num) " +"VALUES (?, ?, ?, ?, ?, ?)";
             	 
             	 ps = connection.prepareStatement(insertSql);
             	 
-            	 ps.setString(1,test.getStudent().getNo());
+            	 ps.setString(1, test.getStudent().getNo());
+            	 ps.setString(2, test.getSubject().getCd());
+            	 ps.setString(3, test.getSchool().getCd());
+            	 ps.setInt(4, test.getNo());
+            	 ps.setInt(5, test.getPoint());
+            	 ps.setString(6, test.getClassNum());
             	 
-            	 ps.setString(2,test.getSubject().getCd());
-            	 
-            	 ps.setInt(3,test.getNo());
-            	 
-            	 ps.setInt(4,test.getPoint());
              }
              
              int executeResult =ps.executeUpdate();
@@ -314,6 +269,10 @@ public class TestDao extends Dao {
         } catch (Exception e) {
         	
         	e.printStackTrace();
+        }finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
         
         return result;

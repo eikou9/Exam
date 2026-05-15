@@ -14,7 +14,7 @@
 			<h2 class="h3 mb-3 fw-normal bg-secondary bg-opacity-10 py-2 px-4">成績管理</h2>
 
 			<%-- 検索フォーム --%>
-			<form action="ScoreList.action" method="get">
+			<form action="TestRegist.action" method="get">
 				<div class="row border mx-3 mb-3 py-3 align-items-end rounded" id="filter">
 					<div class="col-2">
 						<label class="form-label" for="ent-year-select">入学年度</label>
@@ -62,9 +62,9 @@
 			<%-- 成績入力・一括登録フォーム --%>
 			<c:choose>
 				<c:when test="${students.size() > 0}">
-					<div class="px-4 mb-2 text-muted">検索結果：${students.size()}件</div>
+					<div>科目：${subjectName}(${f4 }回)</div>
 					
-					<form action="ScoreSave.action" method="post">
+					<form action="TestRegistExecute.action" method="post">
 						<%-- 検索条件を引き継ぐための隠しパラメータ --%>
 						<input type="hidden" name="f1" value="${f1}">
 						<input type="hidden" name="f2" value="${f2}">
@@ -84,12 +84,12 @@
 							<tbody>
 								<c:forEach var="student" items="${students}">
 									<tr class="align-middle">
-										<td>${student.entYear}</td>
+										<td>${student.student.entYear}</td>
 										<td>${student.classNum}</td>
-										<td>${student.no}</td>
-										<td>${student.name}</td>
+										<td>${student.student.no}</td>
+										<td>${student.student.name}</td>
 										<td>
-											<input type="hidden" name="student_no_list" value="${student.no}">
+											<input type="hidden" name="student_no_list" value="${student.student.no}">
 											<input type="number" name="point_list" class="form-control form-control-sm" 
 												value="${student.point}" min="0" max="100">
 										</td>
