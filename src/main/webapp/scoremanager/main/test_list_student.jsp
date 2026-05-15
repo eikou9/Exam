@@ -210,7 +210,7 @@ th{
 <!-- 左メニュー -->
 <div class="menu">
 
-<a href="${pageContext.request.contextPath}/Menu.action">
+<a href="Menu.action">
     メニュー
 </a>
 
