@@ -31,6 +31,12 @@
                         ${subject.cd}
                     </div>
 
+                    <c:if test="${error != null}">
+                        <p class="text-warning">
+                            ${error}
+                        </p>
+                    </c:if>
+
                     <!-- hiddenで送信 -->
                     <input type="hidden"
                            name="cd"

@@ -54,6 +54,17 @@ public class SubjectUpdateAction extends Action {
                 teacher.getSchool()
             );
 
+        // ===== エラー処理追加 =====
+
+        if (subject == null) {
+
+            req.setAttribute(
+                "error",
+                "科目が存在していません"
+            );
+
+        }
+
 
         // ===== JSPへデータ渡し =====
 
