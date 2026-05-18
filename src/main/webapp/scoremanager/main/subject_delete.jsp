@@ -13,7 +13,7 @@ String cd = (String)request.getAttribute("cd");
 <p>
 科目コード「<%= cd %>」を削除してもよろしいですか？
 </p>
-<form action="SubjectDeleteDone.action" method="post">
+<form action="SubjectDeleteExecute.action" method="post">
 <input type="hidden" name="cd" value="<%= cd %>">
 <button type="submit"
        style="background:red;color:white;">
